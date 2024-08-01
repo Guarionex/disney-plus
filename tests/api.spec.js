@@ -26,16 +26,8 @@ describe('API', () => {
     data: {
       StandardCollection: {
         containers: [
-          {
-            set: {
-              refId: "example-ref-id-1",
-            }
-          },
-          {
-            set: {
-              refId: "example-ref-id-2",
-            }
-          }
+          {set: {refId: "example-ref-id-1"}},
+          {set: {refId: "example-ref-id-2"}}
         ]
       }
     }
@@ -45,28 +37,8 @@ describe('API', () => {
       CuratedSet: {
         items: [
           {
-            text: {
-              title: {
-                full: {
-                  series: {
-                    default: {
-                      content: 'Example Item Title 1',
-                    },
-                  },
-                },
-              },
-            },
-            image: {
-              tile: {
-                '1.78': {
-                  series: {
-                    default: {
-                      url: 'https://example.com/image1.jpg',
-                    },
-                  },
-                },
-              },
-            },
+            text: {title: {full: {series: {default: {content: 'Example Item Title 1'}}}}},
+            image: {tile: {'1.78': {series: {default: {url: 'https://example.com/image1.jpg'}}}}}
           },
         ],
       },
@@ -77,28 +49,8 @@ describe('API', () => {
       CuratedSet: {
         items: [
           {
-            text: {
-              title: {
-                full: {
-                  series: {
-                    default: {
-                      content: 'Example Item Title 2',
-                    },
-                  },
-                },
-              },
-            },
-            image: {
-              tile: {
-                '1.78': {
-                  series: {
-                    default: {
-                      url: 'https://example.com/image2.jpg',
-                    },
-                  },
-                },
-              },
-            },
+            text: {title: {full: {series: {default: {content: 'Example Item Title 2'}}}}},
+            image: {tile: {'1.78': {series: {default: {url: 'https://example.com/image2.jpg'}}}}}
           },
         ],
       },
