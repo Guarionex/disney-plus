@@ -139,7 +139,7 @@ describe('API', () => {
   })
 
   it('Should handle errors when fetching home page data', () => {
-    mockFetch("not a valid url")
+    mockFetch([{url: "not a valid url"}])
 
     return expect(fetchHomePageData()).rejects.toThrow('Could not fetch home data')
   })
