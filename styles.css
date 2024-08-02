@@ -54,3 +54,8 @@ h2 {
   margin: 10px;
   text-align: center;
 }
+
+.item:focus {
+  transform: scale(1.1);
+  z-index: 1;
+}

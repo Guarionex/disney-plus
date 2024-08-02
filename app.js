@@ -94,6 +94,7 @@ const renderDataTile = (items, itemContainer) => {
     const itemContent = getItemContent(item)
     const itemElement = document.createElement('div')
     itemElement.className = 'item'
+    itemElement.tabIndex = 0
 
     const itemTitleElement = document.createElement('p')
     itemTitleElement.textContent = itemContent.title
