@@ -69,6 +69,49 @@ describe('App', () => {
       }
     }
   }
+  const homeDataImagesSizes = {
+    data: {
+      StandardCollection: {
+        containers: [{
+          set: {
+            items: [
+              {
+                seriesId: 'example-series-id',
+                text: {title: {full: {series: {default: {content: 'Series Title'}}}}},
+                image: {
+                  tile: {
+                    '2.29': {series: {default: {url: 'https://example.com/image2.29.jpg'}}},
+                    '1.78': {series: {default: {url: 'https://example.com/image1.78.jpg'}}}
+                  }
+                }
+              },
+              {
+                programId: 'example-program-id',
+                text: {title: {full: {program: {default: {content: 'Program Title'}}}}},
+                image: {
+                  tile: {
+                    '1.78': {program: {default: {url: 'https://example.com/image1.78.jpg'}}},
+                    '1.33': {program: {default: {url: 'https://example.com/image1.33.jpg'}}}
+                  }
+                }
+              },
+              {
+                collectionId: 'example-collection-id',
+                text: {title: {full: {collection: {default: {content: 'Collection Title'}}}}},
+                image: {
+                  tile: {
+                    '1.00': {default: {default: {url: 'https://example.com/image1.00.jpg'}}},
+                    '0.75': {default: {default: {url: 'https://example.com/image0.75.jpg'}}}
+                  }
+                }
+              }
+            ],
+            text: {title: {full: {set: {default: {content: 'Container without refId'}}}}}
+          }
+        }]
+      }
+    }
+  }
 
   beforeEach(() => {
     document.body.innerHTML = '<div id="app-container"></div>'
@@ -118,5 +161,17 @@ describe('App', () => {
 
     expect(container).toBeInTheDocument()
     expect(itemTitle).toBeInTheDocument()
+  })
+
+  it('Should prioritize 1.78 image size if available, else fall back to other sizes', () => {
+    renderHomePage(homeDataImagesSizes, {})
+
+    const seriesImage = screen.getByAltText('Series Title')
+    const programImage = screen.getByAltText('Program Title')
+    const collectionImage = screen.getByAltText('Collection Title')
+
+    expect(seriesImage.src).toBe('https://example.com/image1.78.jpg')
+    expect(programImage.src).toBe('https://example.com/image1.78.jpg')
+    expect(collectionImage.src).toBe('https://example.com/image1.00.jpg')
   })
 })

@@ -40,30 +40,53 @@ export const renderHomePage = (homeData, refDataMap) => {
   }
 }
 
+const getImageUrls = (imageData, type) => {
+  const urls = {}
+
+  Object.entries(imageData).forEach(([size, imageSizeData]) => {
+    const typeObject = imageSizeData[type].default
+
+    if(!!typeObject.url) {
+      urls[size] = typeObject.url
+    }
+  })
+
+  return urls
+}
+
 const getItemContent = (item) => {
   if (item.seriesId) {
     return {
-      type: 'series',
       title: item.text.title.full.series.default.content,
-      imageUrl: item.image.tile['1.78'].series.default.url,
+      imageUrls: getImageUrls(item.image.tile, 'series'),
       video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   } else if (item.programId) {
     return {
-      type: 'program',
       title: item.text.title.full.program.default.content,
-      imageUrl: item.image.tile['1.78'].program.default.url,
+      imageUrls: getImageUrls(item.image.tile, 'program'),
       video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   } else if (item.collectionId) {
     return {
-      type: 'collection',
       title: item.text.title.full.collection.default.content,
-      imageUrl: item.image.tile['1.78'].default.default.url,
+      imageUrls: getImageUrls(item.image.tile, 'default'),
       video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   }
   return null
+}
+
+const imageSizes = ['1.78', '2.29', '1.33', '1.00', '0.75', '0.71', '0.67']
+
+function createVideoElement(itemContent) {
+  const videoElement = document.createElement('video')
+  videoElement.src = itemContent.video
+  videoElement.alt = itemContent.title
+  videoElement.autoplay = true
+  videoElement.muted = true
+  videoElement.loop = true
+  return videoElement
 }
 
 const renderDataTile = (items, itemContainer) => {
@@ -76,7 +99,8 @@ const renderDataTile = (items, itemContainer) => {
     itemTitleElement.textContent = itemContent.title
     itemElement.appendChild(itemTitleElement)
 
-    const imageUrl = itemContent.imageUrl
+    const imageUrl = imageSizes.reduce((url, size) => url || itemContent.imageUrls[size], null)
+
     const imageElement = document.createElement('img')
     imageElement.src = imageUrl
     imageElement.alt = itemContent.title
@@ -84,12 +108,7 @@ const renderDataTile = (items, itemContainer) => {
 
     imageElement.onerror = () => {
       if (!!itemContent.video) {
-        const videoElement = document.createElement('video')
-        videoElement.src = itemContent.video
-        videoElement.alt = itemContent.title
-        videoElement.autoplay = true
-        videoElement.muted = true
-        videoElement.loop = true
+        const videoElement = createVideoElement(itemContent)
         itemElement.replaceChild(videoElement, imageElement)
       }
     }
