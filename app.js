@@ -1,4 +1,4 @@
-import {fetchHomePageData} from "./api"
+import {fetchHomePageData} from "./api.js"
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchHomePageData()
@@ -35,15 +35,17 @@ export const renderHomePage = (homeData, refDataMap) => {
 const isRefDataPopulated = refData => !!refData.data && !!refData.data.CuratedSet && !!refData.data.CuratedSet.items
 
 const renderRefDataTile = (refData, containerElement) => {
-  if(isRefDataPopulated(refData)) {
+  if (isRefDataPopulated(refData)) {
     refData.data.CuratedSet.items.forEach(item => {
       const itemElement = document.createElement('div')
 
+      const isSeries = !!item.seriesId
+
       const itemTitleElement = document.createElement('p')
-      itemTitleElement.textContent = item.text.title.full.series.default.content
+      itemTitleElement.textContent = isSeries ? item.text.title.full.series.default.content : item.text.title.full.program.default.content
       itemElement.appendChild(itemTitleElement)
 
-      const imageUrl = item.image.tile['1.78'].series.default.url
+      const imageUrl = isSeries ? item.image.tile['1.78'].series.default.url : item.image.tile['1.78'].program.default.url
       const imageElement = document.createElement('img')
       imageElement.src = imageUrl
       itemElement.appendChild(imageElement)
