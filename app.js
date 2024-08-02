@@ -1,8 +1,12 @@
 import {fetchHomePageData} from "./api.js"
+import {navigation} from "./navigation.js"
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchHomePageData()
-    .then(({homeData, refDataMap}) => renderHomePage(homeData, refDataMap))
+    .then(({homeData, refDataMap}) => {
+      renderHomePage(homeData, refDataMap)
+      navigation()
+    })
 })
 
 const isHomeDataPopulated = homeData => !!homeData.data && !!homeData.data.StandardCollection && !!homeData.data.StandardCollection.containers
