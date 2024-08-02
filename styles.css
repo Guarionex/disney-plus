@@ -1,0 +1,55 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0c111b;
+  color: #fff;
+  margin: 0;
+  padding: 20px;
+}
+
+#app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 24px;
+  color: #f9f9f9;
+  margin: 20px 0 10px 0;
+  border-bottom: 2px solid #444;
+  padding-bottom: 10px;
+}
+
+.container {
+  margin-bottom: 20px;
+}
+
+.items-container {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 10px;
+}
+
+.item {
+  background-color: #1f232c;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 200px;
+  margin-right: 15px;
+  display: inline-block;
+  vertical-align: top;
+  flex: 0 0 auto;
+}
+
+.item img {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #444;
+}
+
+.item p {
+  font-size: 14px;
+  color: #f9f9f9;
+  margin: 10px;
+  text-align: center;
+}

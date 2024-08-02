@@ -10,7 +10,19 @@ describe('App', () => {
       StandardCollection: {
         containers: [
           {set: {refId: 'example-ref-id-1', text: {title: {full: {set: {default: {content: 'Container 1'}}}}}}},
-          {set: {refId: 'example-ref-id-2', text: {title: {full: {set: {default: {content: 'Container 2'}}}}}}}
+          {set: {refId: 'example-ref-id-2', text: {title: {full: {set: {default: {content: 'Container 2'}}}}}}},
+          {
+            set: {
+              items: [
+                {
+                  collectionId: 'example-collection-id',
+                  text: {title: {full: {collection: {default: {content: 'Example collection Title'}}}}},
+                  image: {tile: {'1.78': {default: {default: {url: 'https://example.com/image3.jpg'}}}}}
+                }
+              ],
+              text: {title: {full: {set: {default: {content: 'Container without refId'}}}}}
+            }
+          }
         ]
       }
     }
@@ -26,8 +38,9 @@ describe('App', () => {
               image: {tile: {'1.78': {series: {default: {url: 'https://example.com/image1.jpg'}}}}}
             },
             {
-              text: { title: { full: { program: { default: { content: 'Example Item Title 2' } } } } },
-              image: { tile: { '1.78': { program: { default: { url: 'https://example.com/image2.jpg' } } } } }
+              programId: 'example-program-id',
+              text: {title: {full: {program: {default: {content: 'Example Item Title 2'}}}}},
+              image: {tile: {'1.78': {program: {default: {url: 'https://example.com/image2.jpg'}}}}}
             }
           ]
         }
@@ -52,6 +65,8 @@ describe('App', () => {
     const title1 = screen.getByText('Example Item Title 1')
     const title2 = screen.getByText('Example Item Title 2')
     const errorTile = screen.getByText('Error loading data')
+    const containerWithoutRefId = screen.getByText('Container without refId')
+    const itemWithoutRefId = screen.getByText('Example collection Title')
 
 
     expect(container1).toBeInTheDocument()
@@ -59,5 +74,7 @@ describe('App', () => {
     expect(title1).toBeInTheDocument()
     expect(title2).toBeInTheDocument()
     expect(errorTile).toBeInTheDocument()
+    expect(containerWithoutRefId).toBeInTheDocument()
+    expect(itemWithoutRefId).toBeInTheDocument()
   })
 })
