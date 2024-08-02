@@ -41,7 +41,8 @@ h2 {
   flex: 0 0 auto;
 }
 
-.item img {
+.item img,
+.item video{
   width: 100%;
   height: auto;
   border-bottom: 1px solid #444;

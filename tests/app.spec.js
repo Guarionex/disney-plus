@@ -1,5 +1,5 @@
 import {renderHomePage} from '../app'
-import {screen} from '@testing-library/dom'
+import {fireEvent, screen, waitFor} from '@testing-library/dom'
 import '@testing-library/jest-dom'
 
 jest.mock('../api')
@@ -48,6 +48,27 @@ describe('App', () => {
     },
     'example-ref-id-2': {error: true}
   }
+  const homeDataWithVideoFallback = {
+    data: {
+      StandardCollection: {
+        containers: [
+          {
+            set: {
+              items: [
+                {
+                  seriesId: 'example-series-id',
+                  text: {title: {full: {series: {default: {content: 'Item with Video Fallback'}}}}},
+                  image: {tile: {'1.78': {series: {default: {url: 'https://example.com/invalid-image.jpg'}}}}},
+                  videoArt: [{mediaMetadata: {urls: [{url: 'https://example.com/video-fallback.mp4'}]}}]
+                }
+              ],
+              text: {title: {full: {set: {default: {content: 'Container with Video Fallback'}}}}}
+            }
+          }
+        ]
+      }
+    }
+  }
 
   beforeEach(() => {
     document.body.innerHTML = '<div id="app-container"></div>'
@@ -76,5 +97,26 @@ describe('App', () => {
     expect(errorTile).toBeInTheDocument()
     expect(containerWithoutRefId).toBeInTheDocument()
     expect(itemWithoutRefId).toBeInTheDocument()
+  })
+
+  it('Should use video URL as fallback when image URL is not available', async () => {
+    renderHomePage(homeDataWithVideoFallback, {})
+
+    const container = screen.getByText('Container with Video Fallback')
+    const itemTitle = screen.getByText('Item with Video Fallback')
+    const imageElement = screen.getByRole('img', {name: 'Item with Video Fallback'})
+    expect(imageElement).toHaveAttribute('src', 'https://example.com/invalid-image.jpg')
+
+    fireEvent.error(imageElement)
+
+    await waitFor(() => {
+      const videoElement = document.querySelector('video')
+      expect(videoElement).toHaveAttribute('src', 'https://example.com/video-fallback.mp4')
+      expect(videoElement).toHaveAttribute('autoplay')
+      expect(videoElement).toHaveAttribute('loop')
+    })
+
+    expect(container).toBeInTheDocument()
+    expect(itemTitle).toBeInTheDocument()
   })
 })

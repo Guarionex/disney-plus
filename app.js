@@ -45,19 +45,22 @@ const getItemContent = (item) => {
     return {
       type: 'series',
       title: item.text.title.full.series.default.content,
-      imageUrl: item.image.tile['1.78'].series.default.url
+      imageUrl: item.image.tile['1.78'].series.default.url,
+      video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   } else if (item.programId) {
     return {
       type: 'program',
       title: item.text.title.full.program.default.content,
-      imageUrl: item.image.tile['1.78'].program.default.url
+      imageUrl: item.image.tile['1.78'].program.default.url,
+      video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   } else if (item.collectionId) {
     return {
       type: 'collection',
       title: item.text.title.full.collection.default.content,
-      imageUrl: item.image.tile['1.78'].default.default.url
+      imageUrl: item.image.tile['1.78'].default.default.url,
+      video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   }
   return null
@@ -76,7 +79,20 @@ const renderDataTile = (items, itemContainer) => {
     const imageUrl = itemContent.imageUrl
     const imageElement = document.createElement('img')
     imageElement.src = imageUrl
+    imageElement.alt = itemContent.title
     itemElement.appendChild(imageElement)
+
+    imageElement.onerror = () => {
+      if (!!itemContent.video) {
+        const videoElement = document.createElement('video')
+        videoElement.src = itemContent.video
+        videoElement.alt = itemContent.title
+        videoElement.autoplay = true
+        videoElement.muted = true
+        videoElement.loop = true
+        itemElement.replaceChild(videoElement, imageElement)
+      }
+    }
 
     itemContainer.appendChild(itemElement)
   })
