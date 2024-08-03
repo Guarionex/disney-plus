@@ -24,7 +24,8 @@ describe('App', () => {
               ],
               text: {title: {full: {set: {default: {content: 'Container without refId'}}}}}
             }
-          }
+          },
+          // {set: {text: {title: {full: {set: {default: {content: 'Empty Container'}}}}}}},
         ]
       }
     }
@@ -179,21 +180,21 @@ describe('App', () => {
     renderHomePage(homeData, refDataMap)
 
     const container1 = screen.getByText('Container 1')
-    const container2 = screen.getByText('Container 2')
+    const container2 = screen.queryByText('Container 2')
     const title1 = screen.getByAltText('Example Item Title 1')
     const title2 = screen.getByAltText('Example Item Title 2')
-    const errorTile = screen.getByText('Error loading data')
     const containerWithoutRefId = screen.getByText('Container without refId')
     const itemWithoutRefId = screen.getByAltText('Example collection Title')
+    const emptyContainer = screen.queryByText('Empty Container')
 
 
     expect(container1).toBeInTheDocument()
-    expect(container2).toBeInTheDocument()
+    expect(container2).not.toBeInTheDocument()
     expect(title1).toBeInTheDocument()
     expect(title2).toBeInTheDocument()
-    expect(errorTile).toBeInTheDocument()
     expect(containerWithoutRefId).toBeInTheDocument()
     expect(itemWithoutRefId).toBeInTheDocument()
+    expect(emptyContainer).not.toBeInTheDocument()
   })
 
   it('Should use video URL as fallback when image URL is not available', async () => {

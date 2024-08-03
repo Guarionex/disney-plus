@@ -16,34 +16,41 @@ document.addEventListener('DOMContentLoaded', () => {
 const isHomeDataPopulated = homeData => !!homeData.data && !!homeData.data.StandardCollection && !!homeData.data.StandardCollection.containers
 const isRefDataPopulated = refData => !!refData.data && !!refData.data.CuratedSet && !!refData.data.CuratedSet.items
 
+const hasItems = (container, refDataMap) => {
+  if (container.set.refId) {
+    const refData = refDataMap[container.set.refId]
+    return refData && !refData.error && isRefDataPopulated(refData)
+  } else {
+    return container.set.items && container.set.items.length > 0
+  }
+}
+
 export const renderHomePage = (homeData, refDataMap) => {
   const appContainer = document.getElementById('app-container')
 
   if (isHomeDataPopulated(homeData)) {
     homeData.data.StandardCollection.containers.forEach(container => {
-      const containerElement = document.createElement('div')
-      containerElement.className = 'container'
+      if (hasItems(container, refDataMap)) {
+        const containerElement = document.createElement('div')
+        containerElement.className = 'container'
 
-      const titleElement = document.createElement('h2')
-      titleElement.textContent = container.set.text.title.full.set.default.content
-      containerElement.appendChild(titleElement)
+        const titleElement = document.createElement('h2')
+        titleElement.textContent = container.set.text.title.full.set.default.content
+        containerElement.appendChild(titleElement)
 
-      const itemsContainer = document.createElement('div')
-      itemsContainer.classList.add('items-container')
+        const itemsContainer = document.createElement('div')
+        itemsContainer.classList.add('items-container')
 
-      if (!!container.set.refId) {
-        const refData = refDataMap[container.set.refId]
-        if (refData.error) {
-          renderErrorTile(itemsContainer)
-        } else if (isRefDataPopulated(refData)) {
+        if (!!container.set.refId) {
+          const refData = refDataMap[container.set.refId]
           renderDataTile(refData.data.CuratedSet.items, itemsContainer)
+        } else if (container.set.items) {
+          renderDataTile(container.set.items, itemsContainer)
         }
-      } else if (container.set.items) {
-        renderDataTile(container.set.items, itemsContainer)
-      }
 
-      containerElement.appendChild(itemsContainer)
-      appContainer.appendChild(containerElement)
+        containerElement.appendChild(itemsContainer)
+        appContainer.appendChild(containerElement)
+      }
     })
   }
 }
@@ -130,13 +137,6 @@ const renderDataTile = (items, itemContainer) => {
 
     itemContainer.appendChild(itemElement)
   })
-}
-
-const renderErrorTile = (itemContainer) => {
-  const errorElement = document.createElement('div')
-  errorElement.textContent = 'Error loading data'
-
-  itemContainer.appendChild(errorElement)
 }
 
 document.addEventListener('keydown', (event) => {
