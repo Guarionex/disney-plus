@@ -180,11 +180,11 @@ describe('App', () => {
 
     const container1 = screen.getByText('Container 1')
     const container2 = screen.getByText('Container 2')
-    const title1 = screen.getByText('Example Item Title 1')
-    const title2 = screen.getByText('Example Item Title 2')
+    const title1 = screen.getByAltText('Example Item Title 1')
+    const title2 = screen.getByAltText('Example Item Title 2')
     const errorTile = screen.getByText('Error loading data')
     const containerWithoutRefId = screen.getByText('Container without refId')
-    const itemWithoutRefId = screen.getByText('Example collection Title')
+    const itemWithoutRefId = screen.getByAltText('Example collection Title')
 
 
     expect(container1).toBeInTheDocument()
@@ -200,7 +200,6 @@ describe('App', () => {
     renderHomePage(homeDataWithVideoFallback, {})
 
     const container = screen.getByText('Container with Video Fallback')
-    const itemTitle = screen.getByText('Item with Video Fallback')
     const imageElement = screen.getByRole('img', {name: 'Item with Video Fallback'})
     expect(imageElement).toHaveAttribute('src', 'https://example.com/invalid-image.jpg')
 
@@ -214,7 +213,6 @@ describe('App', () => {
     })
 
     expect(container).toBeInTheDocument()
-    expect(itemTitle).toBeInTheDocument()
   })
 
   it('Should prioritize 1.78 image size if available, else fall back to other sizes', () => {
@@ -232,7 +230,7 @@ describe('App', () => {
   it('Should open modal with video', () => {
     renderHomePage(homeDataModal, refDataMapModal)
 
-    const titleElement = screen.getByText('Example Series Title')
+    const titleElement = screen.getByAltText('Example Series Title')
     const item = titleElement.closest('.item')
     item.classList.add('focus')
 
@@ -244,7 +242,7 @@ describe('App', () => {
   it('Should open modal with hero image', () => {
     renderHomePage(homeDataModal, refDataMapModal)
 
-    const titleElement = screen.getByText('Example Item Title 1')
+    const titleElement = screen.getByAltText('Example Item Title 1')
     const item = titleElement.closest('.item')
     item.classList.add('focus')
 
@@ -256,7 +254,7 @@ describe('App', () => {
   it('Should open modal with regular image', () => {
     renderHomePage(homeDataModal, refDataMapModal)
 
-    const titleElement = screen.getByText('Example Item Title 2')
+    const titleElement = screen.getByAltText('Example Item Title 2')
     const item = titleElement.closest('.item')
     item.classList.add('focus')
 

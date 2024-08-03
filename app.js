@@ -107,10 +107,6 @@ const renderDataTile = (items, itemContainer) => {
     itemElement.className = 'item'
     itemElement.tabIndex = 0
 
-    const itemTitleElement = document.createElement('p')
-    itemTitleElement.textContent = itemContent.title
-    itemElement.appendChild(itemTitleElement)
-
     const imageUrl = imageSizes.reduce((url, size) => url || itemContent.imageUrls[size], null)
     const heroUrl = heroSizes.reduce((url, size) => url || itemContent.heroUrls[size], null)
 
@@ -130,6 +126,7 @@ const renderDataTile = (items, itemContainer) => {
       itemElement.setAttribute('data-video-url', itemContent.video)
     }
     itemElement.setAttribute('data-hero-url', !!heroUrl ? heroUrl : imageUrl)
+    itemElement.setAttribute('data-title', itemContent.title)
 
     itemContainer.appendChild(itemElement)
   })
@@ -146,7 +143,7 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     const focusedItem = document.querySelector('.item.focus')
     if (focusedItem) {
-      const title = focusedItem.querySelector('p').textContent
+      const title = focusedItem.getAttribute('data-title')
       const videoUrl = focusedItem.getAttribute('data-video-url')
       const heroUrl = focusedItem.getAttribute('data-hero-url')
       openModal(title, videoUrl, heroUrl)
