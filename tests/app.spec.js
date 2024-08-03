@@ -1,8 +1,10 @@
 import {renderHomePage} from '../app'
 import {fireEvent, screen, waitFor} from '@testing-library/dom'
 import '@testing-library/jest-dom'
+import {openModal} from "../modal";
 
 jest.mock('../api')
+jest.mock('../modal')
 
 describe('App', () => {
   const homeData = {
@@ -112,6 +114,58 @@ describe('App', () => {
       }
     }
   }
+  const homeDataModal = {
+    data: {
+      StandardCollection: {
+        containers: [
+          {set: {refId: 'example-ref-id-1', text: {title: {full: {set: {default: {content: 'Container 1'}}}}}}},
+          {set: {refId: 'example-ref-id-2', text: {title: {full: {set: {default: {content: 'Container 2'}}}}}}},
+          {
+            set: {
+              items: [
+                {
+                  seriesId: 'example-series-id',
+                  text: {title: {full: {series: {default: {content: 'Example Series Title'}}}}},
+                  image: {
+                    tile: {'1.78': {series: {default: {url: 'https://example.com/image1.jpg'}}}},
+                    hero_tile: {'3.00': {series: {default: {url: 'https://example.com/hero1.jpg'}}}}
+                  },
+                  videoArt: [{mediaMetadata: {urls: [{url: 'https://example.com/video1.mp4'}]}}]
+                }
+              ],
+              text: {title: {full: {set: {default: {content: 'Container without refId'}}}}}
+            }
+          }
+        ]
+      }
+    }
+  }
+  const refDataMapModal = {
+    'example-ref-id-1': {
+      data: {
+        CuratedSet: {
+          items: [
+            {
+              seriesId: 'example-series-id-1',
+              text: {title: {full: {series: {default: {content: 'Example Item Title 1'}}}}},
+              image: {
+                tile: {'1.78': {series: {default: {url: 'https://example.com/image1.jpg'}}}},
+                hero_tile: {'3.00': {series: {default: {url: 'https://example.com/hero1.jpg'}}}}
+              },
+              videoArt: [{mediaMetadata: {urls: [{url: 'https://example.com/video1.mp4'}]}}]
+            },
+            {
+              programId: 'example-program-id-1',
+              text: {title: {full: {program: {default: {content: 'Example Item Title 2'}}}}},
+              image: {tile: {'1.78': {program: {default: {url: 'https://example.com/image2.jpg'}}}}},
+              videoArt: []
+            }
+          ]
+        }
+      }
+    },
+    'example-ref-id-2': {error: true}
+  }
 
   beforeEach(() => {
     document.body.innerHTML = '<div id="app-container"></div>'
@@ -173,5 +227,41 @@ describe('App', () => {
     expect(seriesImage.src).toBe('https://example.com/image1.78.jpg')
     expect(programImage.src).toBe('https://example.com/image1.78.jpg')
     expect(collectionImage.src).toBe('https://example.com/image1.00.jpg')
+  })
+
+  it('Should open modal with video', () => {
+    renderHomePage(homeDataModal, refDataMapModal)
+
+    const titleElement = screen.getByText('Example Series Title')
+    const item = titleElement.closest('.item')
+    item.classList.add('focus')
+
+    fireEvent.keyDown(item, {key: 'Enter'})
+
+    expect(openModal).toHaveBeenCalledWith('Example Series Title', 'https://example.com/video1.mp4', 'https://example.com/hero1.jpg')
+  })
+
+  it('Should open modal with hero image', () => {
+    renderHomePage(homeDataModal, refDataMapModal)
+
+    const titleElement = screen.getByText('Example Item Title 1')
+    const item = titleElement.closest('.item')
+    item.classList.add('focus')
+
+    fireEvent.keyDown(document, {key: 'Enter'})
+
+    expect(openModal).toHaveBeenCalledWith('Example Item Title 1', 'https://example.com/video1.mp4', 'https://example.com/hero1.jpg')
+  })
+
+  it('Should open modal with regular image', () => {
+    renderHomePage(homeDataModal, refDataMapModal)
+
+    const titleElement = screen.getByText('Example Item Title 2')
+    const item = titleElement.closest('.item')
+    item.classList.add('focus')
+
+    fireEvent.keyDown(document, {key: 'Enter'})
+
+    expect(openModal).toHaveBeenCalledWith('Example Item Title 2', null, 'https://example.com/image2.jpg')
   })
 })

@@ -1,11 +1,15 @@
 import {fetchHomePageData} from "./api.js"
 import {navigation} from "./navigation.js"
+import {closeModal, loadModalHTML, openModal} from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetchHomePageData()
-    .then(({homeData, refDataMap}) => {
-      renderHomePage(homeData, refDataMap)
-      navigation()
+  loadModalHTML()
+    .then(() => {
+      fetchHomePageData()
+        .then(({homeData, refDataMap}) => {
+          renderHomePage(homeData, refDataMap)
+          navigation()
+        })
     })
 })
 
@@ -50,7 +54,7 @@ const getImageUrls = (imageData, type) => {
   Object.entries(imageData).forEach(([size, imageSizeData]) => {
     const typeObject = imageSizeData[type].default
 
-    if(!!typeObject.url) {
+    if (!!typeObject.url) {
       urls[size] = typeObject.url
     }
   })
@@ -59,22 +63,25 @@ const getImageUrls = (imageData, type) => {
 }
 
 const getItemContent = (item) => {
-  if (item.seriesId) {
+  if (!!item.seriesId) {
     return {
       title: item.text.title.full.series.default.content,
       imageUrls: getImageUrls(item.image.tile, 'series'),
+      heroUrls: !!item.image.hero_tile ? getImageUrls(item.image.hero_tile, 'series') : [],
       video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
-  } else if (item.programId) {
+  } else if (!!item.programId) {
     return {
       title: item.text.title.full.program.default.content,
       imageUrls: getImageUrls(item.image.tile, 'program'),
+      heroUrls: !!item.image.hero_tile ? getImageUrls(item.image.hero_tile, 'program') : [],
       video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
-  } else if (item.collectionId) {
+  } else if (!!item.collectionId) {
     return {
       title: item.text.title.full.collection.default.content,
       imageUrls: getImageUrls(item.image.tile, 'default'),
+      heroUrls: !!item.image.hero_tile ? getImageUrls(item.image.hero_tile, 'default') : [],
       video: item.videoArt?.[0]?.mediaMetadata.urls[0].url
     }
   }
@@ -82,11 +89,11 @@ const getItemContent = (item) => {
 }
 
 const imageSizes = ['1.78', '2.29', '1.33', '1.00', '0.75', '0.71', '0.67']
+const heroSizes = ['3.00', '3.91', '1.78']
 
 function createVideoElement(itemContent) {
   const videoElement = document.createElement('video')
   videoElement.src = itemContent.video
-  videoElement.alt = itemContent.title
   videoElement.autoplay = true
   videoElement.muted = true
   videoElement.loop = true
@@ -105,6 +112,7 @@ const renderDataTile = (items, itemContainer) => {
     itemElement.appendChild(itemTitleElement)
 
     const imageUrl = imageSizes.reduce((url, size) => url || itemContent.imageUrls[size], null)
+    const heroUrl = heroSizes.reduce((url, size) => url || itemContent.heroUrls[size], null)
 
     const imageElement = document.createElement('img')
     imageElement.src = imageUrl
@@ -118,6 +126,11 @@ const renderDataTile = (items, itemContainer) => {
       }
     }
 
+    if (!!itemContent.video) {
+      itemElement.setAttribute('data-video-url', itemContent.video)
+    }
+    itemElement.setAttribute('data-hero-url', !!heroUrl ? heroUrl : imageUrl)
+
     itemContainer.appendChild(itemElement)
   })
 }
@@ -128,3 +141,17 @@ const renderErrorTile = (itemContainer) => {
 
   itemContainer.appendChild(errorElement)
 }
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    const focusedItem = document.querySelector('.item.focus')
+    if (focusedItem) {
+      const title = focusedItem.querySelector('p').textContent
+      const videoUrl = focusedItem.getAttribute('data-video-url')
+      const heroUrl = focusedItem.getAttribute('data-hero-url')
+      openModal(title, videoUrl, heroUrl)
+    }
+  } else if (event.key === 'Escape') {
+    closeModal()
+  }
+})
